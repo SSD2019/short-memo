@@ -1,3 +1,4 @@
+const GObject = imports.gi.GObject;
 const Clutter   = imports.gi.Clutter;
 const Lang      = imports.lang;
 const Main      = imports.ui.main;
@@ -10,12 +11,10 @@ const Convenience = Me.imports.convenience;
 
 const MESSAGE_KEY = 'message';
 
-const ShortMemo = new Lang.Class({
-    Name: 'ShortMemo',
-    Extends: PanelMenu.Button,
-
-    _init: function() {
-        this.parent(St.Align.START);
+const ShortMemo = GObject.registerClass(
+class ShortMemo extends PanelMenu.Button { 
+    _init() {
+        super._init(St.Align.START);
         this._settings = Convenience.getSettings();
         this._settingsChangedSignal = this._settings.connect(
                 'changed',
@@ -24,14 +23,14 @@ const ShortMemo = new Lang.Class({
                 }));
         this._buildUI();
         this._refreshUI();
-    },
+    }
 
-    _onDestroy: function() {
+    _onDestroy() {
         this._settings.disconnect(this._settingsChangedSignal);
         this.parent();
-    },
+    }
 
-    _buildUI: function() {
+    _buildUI() {
         this._message = new St.Label({
             name: "short-memo-message",
             y_align: Clutter.ActorAlign.CENTER,
@@ -69,24 +68,24 @@ const ShortMemo = new Lang.Class({
                         }));
                     }
                 }));
-    },
+    }
 
-    _refreshUI: function() {
+    _refreshUI(){
         let message = this._loadMessage();
         this._message.set_text(message);
         this._newMessage.set_text(message);
         this.menu.close();
-    },
+    }
 
-    _saveMessage: function(message) {
+    _saveMessage(){
         this._settings.set_string(MESSAGE_KEY, message);
-    },
+    }
 
-    _loadMessage: function() {
+    _loadMessage() {
         return this._settings.get_string(MESSAGE_KEY);
-    },
+    }
 
-    setMessage: function(message) {
+    setMessage(message) {
         this._saveMessage(message);
         this._refreshUI();
     }
